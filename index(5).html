@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#123B6D" />
+<title>SchoolWatch India | School Problem Reporting Portal</title>
+<style>
+:root{
+  --navy:#64152B; --blue:#C73D6B; --sky:#FFE7EF; --green:#8B3150; --orange:#C45478;
+  --red:#8C1D3C; --ink:#32131E; --muted:#68434F; --paper:#FFFFFF; --bg:#FFF7FA;
+  --line:#E7C1CF; --shadow:0 14px 38px rgba(100,21,43,.12); --radius:20px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);height:70px;display:flex;align-items:center}
+.topbar-inner{width:min(1180px,92%);margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800}
+.brand-mark{width:42px;height:42px;border-radius:13px;background:var(--navy);display:grid;place-items:center;color:#fff;font-size:20px}
+.brand small{display:block;color:var(--muted);font-weight:600;font-size:11px;margin-top:2px;letter-spacing:.04em}
+.nav{display:flex;gap:8px}
+.nav button{border:0;background:transparent;color:var(--muted);padding:10px 12px;border-radius:10px;font-weight:700}
+.nav button.active,.nav button:hover{background:var(--sky);color:var(--navy)}
+.hero{background:linear-gradient(135deg,#64152B,#A92F59 58%,#EF5D87);color:#fff}
+.hero-inner{width:min(1180px,92%);margin:auto;padding:68px 0 72px;display:grid;grid-template-columns:1.35fr .65fr;gap:30px;align-items:center}
+.hero h1{font-size:clamp(34px,5vw,56px);line-height:1.02;margin:0 0 18px;letter-spacing:-.03em}
+.hero p{font-size:18px;line-height:1.6;max-width:700px;color:#EAF4FF;margin:0 0 24px}
+.badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.25);padding:9px 12px;border-radius:999px;font-size:13px}
+.hero-card{background:#fff;color:var(--ink);padding:22px;border-radius:24px;box-shadow:var(--shadow)}
+.hero-card h3{margin:0 0 10px}
+.hero-card p{color:var(--muted);font-size:14px;margin:0;line-height:1.5}
+.hero-stat{display:flex;justify-content:space-between;align-items:end;border-top:1px solid var(--line);padding-top:15px;margin-top:16px}
+.hero-stat strong{font-size:31px;color:var(--navy)}
+main{width:min(1180px,92%);margin:auto;padding:34px 0 70px}
+.view{display:none}.view.active{display:block}
+.section-title{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:18px}
+.section-title h2{margin:0;font-size:28px}.section-title p{margin:0;color:var(--muted)}
+.grid{display:grid;gap:18px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 8px 24px rgba(25,48,71,.05)}
+.stepbar{display:flex;gap:10px;overflow:auto;padding:4px 2px 14px;margin-bottom:12px}
+.step{flex:1;min-width:150px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:var(--muted);font-weight:800}
+.step.active{border-color:#9BC2E9;background:var(--sky);color:var(--navy)}
+label{display:block;font-weight:800;font-size:14px;margin:0 0 7px}
+input[type=text],input[type=search],select,textarea{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
+textarea{min-height:120px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#C77A96;box-shadow:0 0 0 4px rgba(142,27,61,.10)}
+.form-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.form-group{margin-bottom:16px}
+.help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.role{border:2px solid var(--line);padding:18px;border-radius:16px;background:#fff;text-align:left}
+.role.selected{border-color:var(--blue);background:var(--sky)}
+.role strong{display:block;margin-bottom:4px}.role span{color:#68434F;font-size:12px}
+.btn{border:0;border-radius:12px;padding:12px 17px;font-weight:800}
+.btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:#430B17}
+.btn-secondary{background:#FBEAF0;color:var(--navy)}
+.btn-outline{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-danger{background:#FBEAEA;color:var(--red)}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.rule-grid{display:grid;gap:12px}
+.rule{border:1px solid var(--line);border-radius:14px;padding:14px}
+.rule-top{display:flex;justify-content:space-between;gap:16px;align-items:center}
+.rule-name{font-weight:800}.rule-help{font-size:12px;color:var(--muted);margin-top:5px}
+.rule-choices{display:flex;gap:8px;margin-top:10px}
+.choice{border:1px solid var(--line);padding:8px 11px;border-radius:10px;background:#fff;font-weight:800;color:var(--muted)}
+.choice.on-yes{background:#F7E9EE;border-color:#DDB2C1;color:#7A2340}
+.choice.on-no{background:#F9E3EA;border-color:#DDA3B2;color:#8F1738}
+.choice.on-unknown{background:#FFF0F4;border-color:#DDA3B2;color:#8E1B3D}
+.dropzone{border:2px dashed #BFD0E1;border-radius:16px;padding:22px;text-align:center;background:#FAFCFE}
+.dropzone input{display:none}
+.preview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-top:14px}
+.preview{position:relative;border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#fff}
+.preview img{width:100%;height:115px;object-fit:cover;display:block}
+.preview small{display:block;padding:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview button{position:absolute;right:6px;top:6px;width:28px;height:28px;border:0;border-radius:50%;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.notice{padding:13px 15px;background:#FFF0F4;border-left:4px solid #A33A55;border-radius:10px;color:#632338;font-size:13px;line-height:1.5}
+.success{padding:20px;border-radius:16px;background:#F7E9EE;border:1px solid #DDB2C1;color:#6D1E39}
+.muted{color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.kpi strong{display:block;font-size:30px;color:var(--navy);margin-top:3px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;white-space:nowrap}
+th{background:#FFF7FA;color:#6E4A57}
+.status{padding:5px 9px;border-radius:999px;font-weight:800;font-size:11px}
+.status.open{background:#FFF0F4;color:#8E1B3D}.status.verified{background:#F7E9EE;color:#7A2340}
+footer{padding:30px 0;color:#68434F;font-size:12px;text-align:center}
+.toast{position:fixed;right:20px;bottom:20px;z-index:50;background:#193047;color:#fff;padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;max-width:340px}
+@media (max-width:900px){
+  .hero-inner,.grid-2,.grid-3{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .nav{display:none}.hero-inner{padding:48px 0}
+  .form-row,.role-grid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:1fr 1fr}
+  .topbar-inner{width:94%}.hero-inner,main{width:94%}
+}
+
+
+.brand{color:#3B1622}
+.topbar{background:#FFF9FB}
+.topbar-inner{color:#3B1622}
+.brand small{color:#6E3F4C}
+.nav button{color:#643847}
+.nav button.active,.nav button:hover{background:#FBE3EC;color:#64152B}
+
+
+
+
+
+.brand-mark{
+  width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(135deg,#64152B,#C73D6B);
+  color:#fff;display:grid;place-items:center;
+  font-size:25px;font-weight:900;letter-spacing:-.04em;
+  box-shadow:0 7px 18px rgba(100,21,43,.18);
+}
+
+
+.preview-toolbar{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+.btn-preview{background:#C73D6B;color:#fff}
+.btn-preview:hover{background:#A92F59}
+.preview-toolbar-note{font-size:12px;color:#68434F}
+.preview-modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(50,19,30,.62);padding:18px;overflow:auto}
+.preview-modal.show{display:flex;align-items:center;justify-content:center}
+.preview-panel{width:min(920px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:24px;border:1px solid #E7C1CF;box-shadow:0 28px 90px rgba(100,21,43,.28)}
+.preview-head{position:sticky;top:0;z-index:2;background:#FFF8FA;border-bottom:1px solid #E8C8D3;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.preview-head h3{margin:0;color:#64152B}
+.preview-close{width:38px;height:38px;border:0;border-radius:11px;background:#FBE3EC;color:#64152B;font-size:20px;font-weight:900}
+.problem-preview{padding:22px}
+.preview-cover{background:linear-gradient(135deg,#64152B,#A92F59 60%,#EF5D87);color:#fff;border-radius:18px;padding:22px;margin-bottom:18px}
+.preview-cover .eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.preview-cover h2{margin:7px 0 10px;font-size:29px;line-height:1.12}
+.preview-cover p{margin:0;color:#FFE9F1;line-height:1.5}
+.preview-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.preview-chip{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);font-size:12px;font-weight:800}
+.preview-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.preview-box{border:1px solid #E8C8D3;border-radius:16px;padding:17px;background:#FFF9FB}
+.preview-box h4{margin:0 0 10px;color:#64152B}
+.preview-box p{margin:0;color:#32131E;line-height:1.55;white-space:pre-wrap}
+.preview-field{margin-bottom:12px}.preview-field:last-child{margin-bottom:0}
+.preview-field small{display:block;color:#7B5B67;font-weight:800;margin-bottom:4px}
+.preview-evidence{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.preview-evidence-item{border:1px solid #E8C8D3;border-radius:12px;overflow:hidden;background:#fff}
+.preview-evidence-item img{width:100%;height:98px;object-fit:cover;display:block}
+.preview-evidence-item div{padding:8px;font-size:11px;color:#68434F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rule-preview{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed #E8C8D3}
+.rule-preview:last-child{border-bottom:0}
+.rule-badge{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.rule-yes{background:#F8E8EF;color:#6D2440}.rule-no{background:#F9E1E6;color:#8C1D3C}.rule-unknown{background:#FFF0F4;color:#9A4963}
+.preview-foot{padding:0 22px 22px;display:flex;justify-content:flex-end;gap:10px}
+@media(max-width:720px){.preview-grid{grid-template-columns:1fr}.preview-toolbar{align-items:flex-start;flex-direction:column}}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-label="ClassCare C logo">C</div>
+      <div><strong>ClassCare</strong><small>Evidence-based school reporting</small></div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" data-view="report">Report a Problem</button>
+      <button class="nav-btn" data-view="dashboard">Dashboard</button>
+      <button class="nav-btn" data-view="about">How it works</button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="badges">
+        <span class="badge">India-wide</span>
+        <span class="badge">Photo evidence</span>
+        <span class="badge">Rule checklist</span>
+        <span class="badge">Privacy-aware</span>
+      </div>
+      <h1>Report school problems. Provide proof. Drive action.</h1>
+      <p>Report infrastructure, safety, sanitation, accessibility, learning-environment and rule-compliance issues in a simple guided form. Evidence stays attached to the report so decision-makers can investigate instead of guessing.</p>
+      <button class="btn btn-primary" onclick="startReport()">Start a report →</button>
+    </div>
+    <div class="hero-card">
+      <div class="hero-stat" style="border-top:0;padding-top:0;margin-top:0">
+        <div><span class="muted">Reports saved</span><strong id="heroCount">0</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section id="report" class="view active">
+    <div class="section-title">
+      <div><h2>Report a school problem</h2><p>Use facts you can reasonably observe or document. Do not include private student information.</p></div>
+    </div>
+
+    <div class="stepbar">
+      <div class="step active" data-step="1">1 · Role & state</div>
+      <div class="step" data-step="2">2 · School</div>
+      <div class="step" data-step="3">3 · Problem</div>
+      <div class="step" data-step="4">4 · Evidence</div>
+      <div class="step" data-step="5">5 · Rules</div>
+      <div class="step" data-step="6">6 · Review</div>
+    </div>
+
+    <div class="preview-toolbar">
+      <button type="button" class="btn btn-preview" onclick="openProblemPreview()">👁 Preview problem</button>
+      <span class="preview-toolbar-note">Check the report before you submit it.</span>
+    </div>
+    <form id="reportForm" class="card">
+      <div class="form-step" data-step="1">
+        <div class="form-group">
+          <label>Who are you?</label>
+          <div class="role-grid">
+            <button type="button" class="role" data-role="Student"><strong>🎒 Student</strong><span>Use only observations you are comfortable reporting.</span></button>
+            <button type="button" class="role" data-role="Teacher"><strong>📚 Teacher</strong><span>Report school-level issues, not private student records.</span></button>
+            <button type="button" class="role" data-role="Principal / Head"><strong>🏛️ Principal / Head</strong><span>School leadership / administration.</span></button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label for="state">State / Union Territory *</label><select id="state" required></select></div>
+          <div class="form-group"><label for="district">District</label><input id="district" type="text" placeholder="e.g. Jorhat" /></div>
+        </div>
+        <div class="notice">Safety note: Avoid uploading images that reveal children’s faces, ID cards, phone numbers, medical details, or other personal information unless there is a clear lawful reason and appropriate consent.</div>
+        <div class="actions"><span></span><button class="btn btn-primary" type="button" onclick="nextStep()">Continue →</button></div>
+      </div>
+
+      <div class="form-step" data-step="2" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label for="schoolName">School name *</label><input id="schoolName" required placeholder="Full school name" /></div>
+          <div class="form-group"><label for="schoolType">School type</label>
+            <select id="schoolType"><option>Government</option><option>Government-aided</option><option>Private</option><option>Other</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label for="address">School address *</label><textarea id="address" required placeholder="Building / road, locality, district, state, PIN if known"></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label for="pincode">PIN code</label><input id="pincode" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit PIN" /></div>
+          <div class="form-group"><label for="landmark">Nearby landmark</label><input id="landmark" placeholder="Optional" /></div>
+        </div>
+        <div class="actions"><button class="btn btn-secondary" type="button" onclick="prevStep()">← Back</button><button class="btn btn-primary" type="button" onclick="nextStep()">Continue →</button></div>
+      </div>
+
+      <div class="form-step" data-step="3" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label for="category">Problem category *</label>
+            <select id="category" required>
+              <option value="">Select category</option>
+              <option>Building / Infrastructure</option><option>Water / Sanitation</option><option>Electricity / Electrical Safety</option>
+              <option>Fire / Emergency Safety</option><option>Classroom / Learning Environment</option><option>Accessibility</option>
+              <option>Food / Kitchen / Mid-day Meal</option><option>Cleanliness / Waste</option><option>Boundary / Security</option>
+              <option>Teacher / Staff Availability</option><option>Digital / ICT</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group"><label for="severity">Urgency</label>
+            <select id="severity"><option>Low</option><option>Medium</option><option>High</option><option>Immediate safety concern</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label for="problemTitle">Problem title *</label><input id="problemTitle" required placeholder="e.g. Toilet block has no running water" /></div>
+        <div class="form-group"><label for="description">Describe what you observed *</label><textarea id="description" required placeholder="What happened? Where? How often? Who/what is affected? Stick to observable facts."></textarea></div>
+        <div class="form-group"><label for="impact">Impact on students / school</label><textarea id="impact" placeholder="Explain the practical impact without naming or identifying individual children."></textarea></div>
+        <div class="actions"><button class="btn btn-secondary" type="button" onclick="prevStep()">← Back</button><button class="btn btn-primary" type="button" onclick="nextStep()">Continue →</button></div>
+      </div>
+
+      <div class="form-step" data-step="4" style="display:none">
+        <div class="form-group">
+          <label>Photo / evidence</label>
+          <div class="dropzone">
+            <strong>📷 Add evidence</strong>
+            <div class="help">Photos are previewed in this browser. In this demo they are stored locally, not uploaded to a server.</div>
+            <label for="evidence" class="btn btn-secondary" style="display:inline-block;margin-top:12px;cursor:pointer">Choose files</label>
+            <input id="evidence" type="file" accept="image/*,.pdf" multiple />
+          </div>
+          <div id="previewGrid" class="preview-grid"></div>
+        </div>
+        <div class="form-group"><label for="evidenceNote">Evidence note</label><textarea id="evidenceNote" placeholder="Say what each photo/document demonstrates. Example: 'Photo 1 shows broken handrail near staircase.'"></textarea></div>
+        <div class="notice">Evidence should support the reported issue. Do not upload private documents, student records, or images containing children’s faces where they are not necessary.</div>
+        <div class="actions"><button class="btn btn-secondary" type="button" onclick="prevStep()">← Back</button><button class="btn btn-primary" type="button" onclick="nextStep()">Continue →</button></div>
+      </div>
+
+      <div class="form-step" data-step="5" style="display:none">
+        <div class="form-group"><label>School rule / standard checks</label><p class="muted" style="margin-top:0">These are issue-screening questions, not a legal certification. Choose <b>Unknown</b> when you cannot verify a point.</p></div>
+        <div class="rule-grid" id="rules"></div>
+        <div class="actions"><button class="btn btn-secondary" type="button" onclick="prevStep()">← Back</button><button class="btn btn-primary" type="button" onclick="nextStep()">Continue →</button></div>
+      </div>
+
+      <div class="form-step" data-step="6" style="display:none">
+        <div id="review"></div>
+        <div class="notice" style="margin-top:16px">Before saving: check that the school details are accurate, evidence does not expose unnecessary private information, and descriptions are factual rather than accusatory.</div>
+        <div class="actions"><button class="btn btn-secondary" type="button" onclick="prevStep()">← Back</button><button class="btn btn-primary" type="submit">Save report</button></div>
+      </div>
+    </form>
+
+    <div id="submitted" class="card" style="display:none;margin-top:18px"></div>
+  </section>
+
+  <section id="dashboard" class="view">
+    <div class="section-title"><div><h2>Local dashboard</h2><p>This prototype shows reports saved in this browser.</p></div>
+      <div style="display:flex;gap:8px"><button class="btn btn-outline" onclick="exportJSON()">Export JSON</button><button class="btn btn-outline" onclick="exportCSV()">Export CSV</button><button class="btn btn-danger" onclick="clearReports()">Clear local data</button></div>
+    </div>
+    <div class="kpis">
+      <div class="card kpi"><span class="muted">Total reports</span><strong id="kTotal">0</strong></div>
+      <div class="card kpi"><span class="muted">High / immediate</span><strong id="kHigh">0</strong></div>
+      <div class="card kpi"><span class="muted">With evidence</span><strong id="kEvidence">0</strong></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <div class="form-row">
+        <div><label for="dashSearch">Search</label><input id="dashSearch" type="search" placeholder="School, district, problem..." oninput="renderDashboard()" /></div>
+        <div><label for="dashState">Filter by state</label><select id="dashState" onchange="renderDashboard()"><option value="">All states / UTs</option></select></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <div class="table-wrap"><table><thead><tr><th>Date</th><th>School</th><th>State</th><th>Role</th><th>Problem</th><th>Urgency</th><th>Evidence</th><th>Rule checks</th></tr></thead><tbody id="reportTable"></tbody></table></div>
+    </div>
+  </section>
+
+  <section id="about" class="view">
+    <div class="section-title"><div><h2>How the system works</h2><p>A useful civic-data workflow is more than a form.</p></div></div>
+    <div class="grid grid-3">
+      <div class="card"><h3>1. Collect</h3><p class="muted">Capture role, state, school location, issue category, severity, description and evidence.</p></div>
+      <div class="card"><h3>2. Verify</h3><p class="muted">Let authorised reviewers mark reports as verified, duplicate, needs-more-evidence or closed.</p></div>
+      <div class="card"><h3>3. Act</h3><p class="muted">Route verified problems to the responsible authority and track status, response and resolution.</p></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h3>Recommended production architecture</h3>
+      <p class="muted">For real public deployment, add a secure backend, role-based access, encrypted storage, malware/file validation, audit logs, rate limiting, consent/privacy notices, a review queue, evidence access controls, and a defined retention/deletion policy. Avoid publishing exact school coordinates or personal information unless there is a clear public-interest and legal basis.</p>
+    </div>
+  </section>
+</main>
+
+
+<div id="problemPreviewModal" class="preview-modal" aria-hidden="true">
+  <div class="preview-panel" role="dialog" aria-modal="true" aria-label="Problem report preview">
+    <div class="preview-head">
+      <div>
+        <div style="font-size:11px;color:#8E1B3D;font-weight:900;text-transform:uppercase;letter-spacing:.08em">ClassCare</div>
+        <h3>Problem Report Preview</h3>
+      </div>
+      <button class="preview-close" type="button" onclick="closeProblemPreview()" aria-label="Close preview">×</button>
+    </div>
+    <div id="problemPreviewContent" class="problem-preview"></div>
+    <div class="preview-foot">
+      <button class="btn btn-secondary" type="button" onclick="closeProblemPreview()">Back to form</button>
+      <button class="btn btn-primary" type="button" onclick="closeProblemPreview(); setStep(6)">Continue to final review →</button>
+    </div>
+  </div>
+</div>
+
+<footer>SchoolWatch India prototype · Evidence-based reporting · Build for investigation, not harassment</footer>
+<div id="toast" class="toast"></div>
+
+<script>
+const states = [
+"Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal",
+"Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"
+];
+
+const rules = [
+["Safe building condition","No obvious dangerous structural damage in areas used by students."],
+["Safe electrical system","Wiring, sockets, switches and electrical equipment appear safely maintained."],
+["Fire safety access","Fire exits / escape routes are accessible and not blocked."],
+["Drinking water","Safe drinking-water access is available and usable."],
+["Toilet sanitation","Usable toilets are available and reasonably maintained."],
+["Handwashing","Handwashing facilities are accessible near sanitation areas."],
+["Accessibility","Reasonable access is available for students with disabilities."],
+["Cleanliness and waste","Classrooms and common areas have a basic waste-management system."],
+["Boundary / security","Entry and boundary arrangements provide appropriate safety."],
+["Learning environment","Classrooms provide a functional, reasonably safe learning environment."],
+["Kitchen / meal hygiene","Where meals are served, visible food-preparation hygiene appears adequate."],
+["Emergency preparedness","Basic emergency procedures / contacts are displayed or known to staff."]
+];
+
+let currentStep=1, selectedRole="", evidenceFiles=[], ruleAnswers={};
+
+const $ = id => document.getElementById(id);
+function getReports(){ try{return JSON.parse(localStorage.getItem("schoolwatch_reports")||"[]")}catch{return []} }
+function saveReports(x){ localStorage.setItem("schoolwatch_reports",JSON.stringify(x)); updateCounts(); }
+
+function populateStates(){
+  $("state").innerHTML='<option value="">Select your state / UT</option>'+states.map(s=>`<option>${s}</option>`).join("");
+  $("dashState").innerHTML='<option value="">All states / UTs</option>'+states.map(s=>`<option>${s}</option>`).join("");
+}
+function updateCounts(){ $("heroCount").textContent=getReports().length; }
+
+function startReport(){ document.getElementById("report").scrollIntoView({behavior:"smooth"}); }
+document.querySelectorAll(".nav-btn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active")); b.classList.add("active");
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active")); $(b.dataset.view).classList.add("active");
+  if(b.dataset.view==="dashboard") renderDashboard();
+}));
+
+document.querySelectorAll(".role").forEach(btn=>btn.addEventListener("click",()=>{
+  selectedRole=btn.dataset.role||"Principal / Head";
+  document.querySelectorAll(".role").forEach(x=>x.classList.remove("selected")); btn.classList.add("selected");
+}));
+
+function setStep(n){
+  currentStep=n;
+  document.querySelectorAll(".form-step").forEach(s=>s.style.display="none");
+  document.querySelector(`.form-step[data-step="${n}"]`).style.display="block";
+  document.querySelectorAll(".step").forEach(s=>s.classList.toggle("active",Number(s.dataset.step)===n));
+  if(n===6) buildReview();
+}
+function validateStep(n){
+  if(n===1 && (!selectedRole || !$("state").value)){ toast("Choose your role and state first."); return false; }
+  if(n===2 && (!$("schoolName").value.trim() || !$("address").value.trim())){ toast("School name and address are required."); return false; }
+  if(n===3 && (!$("category").value || !$("problemTitle").value.trim() || !$("description").value.trim())){ toast("Complete the problem category, title and description."); return false; }
+  return true;
+}
+function nextStep(){ if(validateStep(currentStep)) setStep(Math.min(6,currentStep+1)); }
+function prevStep(){ setStep(Math.max(1,currentStep-1)); }
+
+function buildRules(){
+  $("rules").innerHTML=rules.map((r,i)=>`
+    <div class="rule">
+      <div class="rule-top"><div><div class="rule-name">${r[0]}</div><div class="rule-help">${r[1]}</div></div>
+      <div class="rule-choices">
+        <button type="button" class="choice ${ruleAnswers[i]==="Yes"?"on-yes":""}" onclick="setRule(${i},'Yes')">Yes</button>
+        <button type="button" class="choice ${ruleAnswers[i]==="No"?"on-no":""}" onclick="setRule(${i},'No')">No</button>
+        <button type="button" class="choice ${ruleAnswers[i]==="Unknown"?"on-unknown":""}" onclick="setRule(${i},'Unknown')">Unknown</button>
+      </div></div>
+    </div>
+  `).join("");
+}
+function setRule(i,v){ruleAnswers[i]=v; buildRules();}
+buildRules();
+
+$("evidence").addEventListener("change",e=>{
+  evidenceFiles=[...evidenceFiles,...Array.from(e.target.files)];
+  renderPreviews(); e.target.value="";
+});
+function renderPreviews(){
+  $("previewGrid").innerHTML=evidenceFiles.map((f,i)=>{
+    if(f.type.startsWith("image/")){
+      const url=URL.createObjectURL(f);
+      return `<div class="preview"><img src="${url}" alt=""><button type="button" onclick="removeEvidence(${i})">×</button><small>${escapeHtml(f.name)}</small></div>`;
+    }
+    return `<div class="preview" style="padding-top:14px;text-align:center"><div style="height:101px;display:grid;place-items:center;font-size:40px">📄</div><button type="button" onclick="removeEvidence(${i})">×</button><small>${escapeHtml(f.name)}</small></div>`;
+  }).join("");
+}
+function removeEvidence(i){evidenceFiles.splice(i,1);renderPreviews();}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+
+function buildReview(){
+  const checks=rules.map((r,i)=>({name:r[0],answer:ruleAnswers[i]||"Unknown"}));
+  $("review").innerHTML=`
+  <div class="grid grid-2">
+    <div class="card" style="box-shadow:none"><h3>Reporter</h3><p><b>Role:</b> ${escapeHtml(selectedRole)}</p><p><b>State:</b> ${escapeHtml($("state").value)}</p><p><b>District:</b> ${escapeHtml($("district").value||"Not provided")}</p></div>
+    <div class="card" style="box-shadow:none"><h3>School</h3><p><b>Name:</b> ${escapeHtml($("schoolName").value)}</p><p><b>Type:</b> ${escapeHtml($("schoolType").value)}</p><p><b>Address:</b> ${escapeHtml($("address").value)}</p></div>
+    <div class="card" style="box-shadow:none"><h3>Problem</h3><p><b>Category:</b> ${escapeHtml($("category").value)}</p><p><b>Urgency:</b> ${escapeHtml($("severity").value)}</p><p><b>Title:</b> ${escapeHtml($("problemTitle").value)}</p><p>${escapeHtml($("description").value)}</p></div>
+    <div class="card" style="box-shadow:none"><h3>Evidence & checks</h3><p><b>Evidence files:</b> ${evidenceFiles.length}</p><p><b>Rule checks marked:</b> ${Object.keys(ruleAnswers).length}/${rules.length}</p><p><b>Evidence note:</b> ${escapeHtml($("evidenceNote").value||"None")}</p></div>
+  </div>`;
+}
+
+$("reportForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+  if(Object.keys(ruleAnswers).length<rules.length) { toast("Please mark every rule check as Yes, No, or Unknown."); return; }
+  // The demo stores file metadata only; a production app should upload files to secure object storage.
+  const report={
+    id:"SW-"+Date.now().toString(36).toUpperCase(),
+    createdAt:new Date().toISOString(),
+    role:selectedRole,state:$("state").value,district:$("district").value.trim(),
+    schoolName:$("schoolName").value.trim(),schoolType:$("schoolType").value,address:$("address").value.trim(),
+    pincode:$("pincode").value.trim(),landmark:$("landmark").value.trim(),
+    category:$("category").value,severity:$("severity").value,problemTitle:$("problemTitle").value.trim(),
+    description:$("description").value.trim(),impact:$("impact").value.trim(),
+    evidence:evidenceFiles.map(f=>({name:f.name,type:f.type,size:f.size})),
+    evidenceNote:$("evidenceNote").value.trim(),
+    rules:rules.map((r,i)=>({name:r[0],answer:ruleAnswers[i]||"Unknown"})),
+    status:"Open"
+  };
+  const list=getReports(); list.unshift(report); saveReports(list);
+  $("submitted").style.display="block";
+  $("submitted").innerHTML=`<div class="success"><h3 style="margin-top:0">Report saved locally ✓</h3><p><b>Reference:</b> ${report.id}</p><p>This prototype saved the report on this device only. Photos themselves were not uploaded. For a real public system, connect the form to a secure backend and private evidence storage.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-primary" onclick="resetForm()">Create another report</button><button class="btn btn-secondary" onclick="showDashboard()">Open dashboard</button></div></div>`;
+  $("reportForm").style.display="none";
+  window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+});
+
+function resetForm(){
+  location.reload();
+}
+function showDashboard(){
+  document.querySelector('[data-view="dashboard"]').click();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderDashboard(){
+  const data=getReports();
+  const q=($("dashSearch").value||"").toLowerCase().trim(), st=$("dashState").value;
+  const filtered=data.filter(r=>{
+    const text=[r.schoolName,r.district,r.state,r.problemTitle,r.category,r.description].join(" ").toLowerCase();
+    return (!q||text.includes(q))&&(!st||r.state===st);
+  });
+  $("kTotal").textContent=data.length;
+  $("kHigh").textContent=data.filter(r=>r.severity==="High"||r.severity==="Immediate safety concern").length;
+  $("kEvidence").textContent=data.filter(r=>r.evidence?.length).length;
+  $("reportTable").innerHTML=filtered.length?filtered.map(r=>{
+    const issues=r.rules?.filter(x=>x.answer!=="Yes").length||0;
+    const date=new Date(r.createdAt).toLocaleString();
+    return `<tr><td>${escapeHtml(date)}</td><td>${escapeHtml(r.schoolName)}</td><td>${escapeHtml(r.state)}</td><td>${escapeHtml(r.role)}</td><td>${escapeHtml(r.problemTitle)}</td><td><span class="status ${r.severity==="Low"?"verified":"open"}">${escapeHtml(r.severity)}</span></td><td>${r.evidence?.length||0}</td><td>${issues} flagged</td></tr>`
+  }).join(""):`<tr><td colspan="8" class="muted">No matching reports.</td></tr>`;
+}
+function exportJSON(){
+  download("schoolwatch-reports.json",JSON.stringify(getReports(),null,2),"application/json");
+}
+function exportCSV(){
+  const rows=[["ID","Date","Role","State","District","School","Type","Address","Category","Urgency","Title","Description","Evidence count","Status"]];
+  getReports().forEach(r=>rows.push([r.id,r.createdAt,r.role,r.state,r.district,r.schoolName,r.schoolType,r.address,r.category,r.severity,r.problemTitle,r.description,r.evidence?.length||0,r.status]));
+  const csv=rows.map(row=>row.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",")).join("\n");
+  download("schoolwatch-reports.csv",csv,"text/csv");
+}
+function download(name,content,type){
+  const blob=new Blob([content],{type}), url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);
+}
+function clearReports(){
+  if(confirm("Delete all locally saved reports from this browser?")){localStorage.removeItem("schoolwatch_reports");renderDashboard();updateCounts();toast("Local reports cleared.");}
+}
+function toast(msg){
+  const t=$("toast");t.textContent=msg;t.style.display="block";clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.style.display="none",2800);
+}
+
+function collectPreviewData(){
+  return {
+    school:$('schoolName').value.trim()||'School name not entered',
+    state:$('state').value||'State not selected',
+    district:$('district').value.trim()||'District not entered',
+    address:$('address').value.trim()||'Address not entered',
+    role:selectedRole||'Role not selected',
+    type:$('schoolType').value||'Not specified',
+    category:$('category').value||'Problem category not selected',
+    severity:$('severity').value||'Not specified',
+    title:$('problemTitle').value.trim()||'Problem title not entered',
+    description:$('description').value.trim()||'No problem description entered yet.',
+    impact:$('impact').value.trim()||'No impact description entered.',
+    note:$('evidenceNote').value.trim()||'No evidence note entered.',
+    evidence:evidenceFiles.map(f=>({name:f.name,type:f.type})),
+    rules:rules.map((r,i)=>({name:r[0],answer:ruleAnswers[i]||'Unknown'}))
+  };
+}
+
+function openProblemPreview(){
+  const d=collectPreviewData();
+  const evidenceHtml=d.evidence.length ? d.evidence.map((f,i)=>{
+    if(f.type && f.type.startsWith('image/')){
+      const u=URL.createObjectURL(evidenceFiles[i]);
+      return `<div class="preview-evidence-item"><img src="${u}" alt="Evidence preview"><div>${escapeHtml(f.name)}</div></div>`;
+    }
+    return `<div class="preview-evidence-item"><div style="height:98px;display:grid;place-items:center;font-size:34px">📄</div><div>${escapeHtml(f.name)}</div></div>`;
+  }).join('') : '<div class="muted">No photo or document evidence added yet.</div>';
+
+  const ruleHtml=d.rules.map(r=>{
+    const c=r.answer==='Yes'?'rule-yes':r.answer==='No'?'rule-no':'rule-unknown';
+    return `<div class="rule-preview"><span>${escapeHtml(r.name)}</span><span class="rule-badge ${c}">${escapeHtml(r.answer)}</span></div>`;
+  }).join('');
+
+  $('problemPreviewContent').innerHTML=`
+    <div class="preview-cover">
+      <div class="eyebrow">School problem report</div>
+      <h2>${escapeHtml(d.title)}</h2>
+      <p>${escapeHtml(d.school)} · ${escapeHtml(d.district)}, ${escapeHtml(d.state)}</p>
+      <div class="preview-meta">
+        <span class="preview-chip">${escapeHtml(d.category)}</span>
+        <span class="preview-chip">${escapeHtml(d.severity)}</span>
+        <span class="preview-chip">${escapeHtml(d.role)}</span>
+        <span class="preview-chip">${d.evidence.length} evidence file(s)</span>
+      </div>
+    </div>
+    <div class="preview-grid">
+      <div class="preview-box">
+        <h4>Problem details</h4>
+        <div class="preview-field"><small>What was observed</small><p>${escapeHtml(d.description)}</p></div>
+        <div class="preview-field"><small>Impact on the school</small><p>${escapeHtml(d.impact)}</p></div>
+        <div class="preview-field"><small>Evidence note</small><p>${escapeHtml(d.note)}</p></div>
+      </div>
+      <div class="preview-box">
+        <h4>School information</h4>
+        <div class="preview-field"><small>School</small><p>${escapeHtml(d.school)}</p></div>
+        <div class="preview-field"><small>Type</small><p>${escapeHtml(d.type)}</p></div>
+        <div class="preview-field"><small>Address</small><p>${escapeHtml(d.address)}</p></div>
+      </div>
+      <div class="preview-box"><h4>Photo / evidence</h4><div class="preview-evidence">${evidenceHtml}</div></div>
+      <div class="preview-box"><h4>Rule / standard checks</h4>${ruleHtml}</div>
+    </div>`;
+
+  $('problemPreviewModal').classList.add('show');
+  $('problemPreviewModal').setAttribute('aria-hidden','false');
+}
+
+function closeProblemPreview(){
+  const m=$('problemPreviewModal');
+  m.classList.remove('show');
+  m.setAttribute('aria-hidden','true');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeProblemPreview();
+});
+
+populateStates();updateCounts();renderDashboard();
+</script>
+</body>
+</html>
